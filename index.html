@@ -71,14 +71,14 @@
                     <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Spot Prices Index</h2>
                     <p class="text-sm text-slate-500 mt-1">
                         Spot prices are updated hourly in New Zealand Dollars converted from global USD markets. 
-                        <span class="block sm:inline font-medium text-slate-700 mt-1 sm:mt-0">
+                        <span class="block font-medium text-slate-700 mt-1 sm:mt-0">
                             Current Live Exchange Conversion Rate: 1 USD = <span id="nzd-usd-rate" class="font-mono font-bold text-amber-700">Loading...</span> NZD.
                         </span>
                     </p>
                 </div>
                 <div class="inline-flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-md">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Backend Cache Sync: <span id="last-updated-time">Syncing...</span></span>
+                    <span>Last Updated: <span id="last-updated-time">Syncing...</span></span>
                 </div>
             </div>
 
@@ -244,9 +244,6 @@
                         <div id="payout-output" class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight font-mono mb-2">
                             $0.00
                         </div>
-                        <p class="text-xxs text-slate-400 max-w-md mx-auto leading-normal">
-                            Prices are computed using safe pricing feeds routed through our secure proxy system.
-                        </p>
                     </div>
                 </div>
             </div>
@@ -353,14 +350,14 @@
         };
 
         const assetConfig = {
-            gold_24k:      { type: 'gold',      purity: 0.999, margin: 0.94 },
-            gold_18k:      { type: 'gold',      purity: 0.750, margin: 0.94 },
-            gold_14k:      { type: 'gold',      purity: 0.583, margin: 0.94 },
-            gold_9k:       { type: 'gold',      purity: 0.375, margin: 0.94 },
-            silver_999:    { type: 'silver',    purity: 0.999, margin: 0.60 },
-            silver_925:    { type: 'silver',    purity: 0.925, margin: 0.60 },
-            platinum_pure: { type: 'platinum',  purity: 0.999, margin: 0.85 },
-            palladium_pure:{ type: 'palladium', purity: 0.999, margin: 0.85 } 
+            gold_24k:      { type: 'gold',      purity: 0.999, margin: 0.94 }, //06% Discount
+            gold_18k:      { type: 'gold',      purity: 0.750, margin: 0.94 }, //06% Discount
+            gold_14k:      { type: 'gold',      purity: 0.583, margin: 0.94 }, //06% Discount
+            gold_9k:       { type: 'gold',      purity: 0.375, margin: 0.94 }, //06% Discount
+            silver_999:    { type: 'silver',    purity: 0.999, margin: 0.60 }, //40% Discount
+            silver_925:    { type: 'silver',    purity: 0.925, margin: 0.60 }, //40% Discount
+            platinum_pure: { type: 'platinum',  purity: 0.999, margin: 0.85 }, //15% Discount
+            palladium_pure:{ type: 'palladium', purity: 0.999, margin: 0.85 }  //15% Discount
         };
 
         const TROY_OUNCE_CONVERSION_DIVISOR = 31.1034768;
