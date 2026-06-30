@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pella Metals | Precious Metals Refining & Bullion Buyers NZ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- Sticky Navigation Header -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-200 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo utilizing Pella_Metals_Logo.jpg references -->
+            <a href="#" class="flex items-center space-x-3 group">
+                <img src="images/Pella_Metals_Logo.jpg" alt="Pella Metals Logo" class="h-20 w-auto object-contain fallback-logo" onerror="this.style.display='none'; document.getElementById('text-logo').style.display='inline-block';">
+                <span id="text-logo" class="hidden text-2xl font-bold tracking-wider text-slate-900 group-hover:text-amber-600 transition-colors">
+                    PELLA <span class="text-amber-500">METALS</span>
+                </span>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold tracking-wide text-slate-600">
+                <a href="#live-prices" class="hover:text-amber-600 transition-colors">Live Prices</a>
+                <a href="#services" class="hover:text-amber-600 transition-colors">Services &amp; Refining</a>
+                <a href="#how-to-sell" class="hover:text-amber-600 transition-colors">How to Sell</a>
+                <a href="#calculator" class="hover:text-amber-600 transition-colors">Calculator</a>
+                <a href="#about" class="hover:text-amber-600 transition-colors">About Us</a>
+            </nav>
+
+            <!-- Action Button links down to the bottom contact form -->
+            <div class="flex items-center">
+                <a href="#contact" 
+                   class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 active:bg-slate-950 rounded-lg shadow-sm transition-all transform hover:-translate-y-0.5">
+                    Contact us
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative min-h-[50vh] flex items-center justify-center overflow-hidden py-16 bg-gradient-to-b from-slate-100 to-slate-50 border-b border-slate-200 px-4 sm:px-6 lg:px-8">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.04)_0%,transparent_60%)] pointer-events-none"></div>
+            
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-4 leading-tight">
+                    We are in the Precious Metals Industry
+                </h1>
+                <p class="text-xl sm:text-2xl font-semibold mb-6 tracking-tight text-slate-700">
+                    We offer competitive rates for your <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 font-bold">scrap and bullion</span>
+                </p>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+                    Pella Metals will unlock the value from your scraps. We are a capable team of precious metals experts with deep domain specific knowledge in metallurgy and inorganic chemistry, assaying, and analytical techniques.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <a href="#calculator" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold rounded-lg text-white bg-amber-600 hover:bg-amber-500 transition-all text-center shadow-md">
+                        Valuation Calculator
+                    </a>
+                    <a href="#services" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-100 transition-all text-center border border-slate-300 shadow-sm">
+                        Services we provide
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Prices Ticker Section -->
+        <section id="live-prices" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-slate-200 scroll-mt-24">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Spot Prices Index</h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        Spot prices are updated once every 5 minutes in New Zealand Dollars converted from USD. 
+                        <span class="block sm:inline font-medium text-slate-700 mt-1 sm:mt-0">
+                            Current Live Exchange Conversion Rate: <span id="nzd-usd-rate" class="font-mono font-bold text-amber-700">Loading...</span> USD per 1 NZD.
+                        </span>
+                    </p>
+                </div>
+                <div class="inline-flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-md">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Prices as of: <span id="last-updated-time">Syncing...</span></span>
+                </div>
+            </div>
+
+            <!-- Asset Grid Layout -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Gold -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-amber-500/50 transition-all">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600 font-mono">XAU / NZD</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-0.5">Gold</h3>
+                    <div class="flex items-baseline gap-1 mt-3">
+                        <span id="gold-price-display" class="text-2xl font-bold font-mono text-slate-900">$--.--</span>
+                        <span class="text-xs text-slate-500 font-medium">/ oz</span>
+                    </div>
+                </div>
+
+                <!-- Silver -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-slate-400 transition-all">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">XAG / NZD</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-0.5">Silver</h3>
+                    <div class="flex items-baseline gap-1 mt-3">
+                        <span id="silver-price-display" class="text-2xl font-bold font-mono text-slate-900">$--.--</span>
+                        <span class="text-xs text-slate-500 font-medium">/ oz</span>
+                    </div>
+                </div>
+
+                <!-- Platinum -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-slate-400 transition-all">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">XPT / NZD</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-0.5">Platinum</h3>
+                    <div class="flex items-baseline gap-1 mt-3">
+                        <span id="platinum-price-display" class="text-2xl font-bold font-mono text-slate-900">$--.--</span>
+                        <span class="text-xs text-slate-500 font-medium">/ oz</span>
+                    </div>
+                </div>
+
+                <!-- Palladium -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-slate-400 transition-all">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">XPD / NZD</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-0.5">Palladium</h3>
+                    <div class="flex items-baseline gap-1 mt-3">
+                        <span id="palladium-price-display" class="text-2xl font-bold font-mono text-slate-900">$--.--</span>
+                        <span class="text-xs text-slate-500 font-medium">/ oz</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services & Material Breakdown Section -->
+        <section id="services" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-slate-200 scroll-mt-24">
+            <div class="mb-12">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-2">Services we Provide</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold mb-4">✓</div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Buy Gold, Silver &amp; Precious Metals</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold mb-4">✓</div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Gold &amp; Precious Metals Refining</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold mb-4">✓</div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">3rd Party Verification &amp; Certification</h3>
+                </div>
+            </div>
+
+            <!-- Recovery Consultation Banner -->
+            <div class="bg-slate-900 text-slate-100 rounded-xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="max-w-2xl">
+                    <h4 class="text-lg font-bold text-white mb-1">Have a Technical Problem or Specific Material Requirement?</h4>
+                    <p class="text-sm text-slate-400">We can help with custom solution contact to arrange a free consultation.</p>
+                </div>
+                <a href="#contact" class="w-full md:w-auto px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-center rounded-lg text-sm transition-colors shrink-0">
+                    Arrange Free Consultation
+                </a>
+            </div>
+
+            <!-- Detailed Source Matrix -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-slate-200/80">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-amber-700 mb-3">Gold Sources</h3>
+                    <ul class="space-y-2 text-sm text-slate-600 font-medium">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Jewellery</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Alluvial</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Dentistry</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Lemels &amp; Sweeps</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Waste Plating Solutions</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3">Silver Sources</h3>
+                    <ul class="space-y-2 text-sm text-slate-600 font-medium">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Sterling Silver</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Silver Coinage</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Dental Amalgam</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Waste Silver Bearing Films</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Electrolytic Silver Recovery</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Spent Plating Solutions</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Silver Chloride Batteries</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Silver Electrical Contacts</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3">Other Precious Metals</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                        Precious metal can be recovered from many different sources other than the common products mentioned. These include **Platinum** and **Palladium**.
+                    </p>
+                    <p class="text-sm text-slate-600 leading-relaxed bg-slate-100 p-3 rounded-lg border border-slate-200">
+                        If you are uncertain we would welcome a call or visit and we will assess the viability of refining for you.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payout Value Calculator Widget -->
+        <section id="calculator" class="py-16 bg-slate-100 border-b border-slate-200 scroll-mt-24">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Calculator</h2>
+                    <p class="text-slate-500 mt-1">Real-time New Zealand vaulation engine, we offer competitive pricing, values provided are indicative estimates.</p>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+                        <!-- Choose Metal Dropdown -->
+                        <div>
+                            <label for="asset-purity" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Choose Metal:</label>
+                            <select id="asset-purity" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-amber-500 text-sm font-semibold transition-colors">
+                                <option value="gold_24k" selected>Gold [24K - 99.9%]</option>
+                                <option value="gold_18k">Gold [18K - 75.0%]</option>
+                                <option value="gold_14k">Gold [14K - 58.3%]</option>
+                                <option value="gold_9k">Gold [9K - 37.5%]</option>
+                                <option value="silver_999">Silver [.999 Fine]</option>
+                                <option value="silver_925">Silver [.925 Sterling]</option>
+                                <option value="platinum_pure">Platinum [Pure]</option>
+                                <option value="palladium_pure">Palladium [Pure]</option>
+                            </select>
+                        </div>
+
+                        <!-- Unit Configuration Selection -->
+                        <div>
+                            <label for="weight-unit" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Weight Unit:</label>
+                            <select id="weight-unit" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-amber-500 text-sm font-semibold transition-colors">
+                                <option value="grams" selected>Grams (g)</option>
+                                <option value="ounces">Troy Ounce (oz)</option>
+                            </select>
+                        </div>
+
+                        <!-- Numeric Weight Entry -->
+                        <div>
+                            <label for="asset-weight" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Weight value:</label>
+                            <input type="number" id="asset-weight" min="0" step="0.01" value="10.00" placeholder="0.00"
+                                   class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-amber-500 text-sm font-mono font-bold transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- Calculated Output Display Text Area -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-500 block mb-2">Estimated Price in NZD</span>
+                        <div id="payout-output" class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight font-mono mb-2">
+                            $0.00
+                        </div>
+                        <p class="text-xxs text-slate-400 max-w-md mx-auto leading-normal">
+                            Spot prices are quoted once every 5 minutes in New Zealand Dollars converted from USD at live exchange rates.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Section: How to Sell -->
+        <section id="how-to-sell" class="py-16 bg-white border-b border-slate-200 scroll-mt-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-4">How to Sell</h2>
+                <p class="text-slate-600 leading-relaxed max-w-3xl">
+                    Selling your assets to Pella Metals is designed to be streamlined and fully secure. Get started by assessing your material value using our real-time indicative layout calculator below. Once you have a clear estimation of your materials, proceed to our custom solution terminal at the base of the page to organize a formal assessment and refinery dispatch arrangement.
+                </p>
+            </div>
+        </section>
+
+        <!-- About/Location Section -->
+        <section id="about" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-slate-200 scroll-mt-24">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                
+            <div class="space-y-4">
+                <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">New Zealand Processing Center</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    Pella Metals is a boutique NZ refinery and Precious Metals buyer. We offer custom solutions and competitive pricing in the precious metals industry.
+                </p>
+            </div>
+
+                <!-- Contact & Retail Matrix Details -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 gap-8 shadow-sm">
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-4 border-b border-slate-200 pb-2">Business Hours</h3>
+                        <p class="text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 p-3 rounded-lg leading-snug">
+                            We currently are not open to the public.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-4 border-b border-slate-200 pb-2">HQ Physical Facility</h3>
+                        <address class="not-italic text-sm text-slate-600 space-y-3">
+                            <p class="leading-relaxed">
+                                Queen Street<br>
+                                Auckland CBD, 1010
+                            </p>
+                        </address>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- New Form Element: Contact Us Emailer Terminal -->
+        <section id="contact" class="py-16 bg-slate-900 text-slate-100 scroll-mt-24">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-extrabold tracking-tight text-white">Contact Us</h2>
+                    <p class="text-slate-400 mt-2">Have a question or request? Drop us a message below and our metallurgical specialists will connect with you.</p>
+                </div>
+
+                <form action="https://formspree.io/f/your_endpoint_here" method="POST" class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-xl space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="contact-name" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Full Name</label>
+                            <input type="text" id="contact-name" name="name" required placeholder="John Doe"
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm transition-colors">
+                        </div>
+                        <div>
+                            <label for="contact-email" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Email Address</label>
+                            <input type="email" id="contact-email" name="email" required placeholder="john@example.co.nz"
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm transition-colors">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="contact-subject" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Subject Requirement</label>
+                        <input type="text" id="contact-subject" name="subject" required placeholder="Refinery Estimate Consultation"
+                               class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="contact-message" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Detailed Message</label>
+                        <textarea id="contact-message" name="message" rows="5" required placeholder="Describe your material weight, type, or custom project scope details here..."
+                                  class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm transition-colors resize-none"></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold text-center rounded-lg text-sm transition-all transform hover:-translate-y-0.5 shadow-md">
+                            Send Secure Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>&copy; 2026 Pella Metals NZ Limited.</p>
+        </div>
+    </footer>
+
+    <!-- Core JavaScript Engineering Architecture -->
+    <script>
+        // Real-Time Asset Pricing Memory Repository
+        const marketState = {
+            goldSpotPrice: 7215.00,   
+            silverSpotPrice: 104.00,
+            platinumSpotPrice: 2850.00,
+            palladiumSpotPrice: 2420.00,
+            nzdUsdRate: 0.5925,
+            lastUpdated: null
+        };
+
+        // Configuration Vectors with customized purity parameters
+        const assetConfig = {
+            gold_24k:      { type: 'gold',      purity: 0.999, margin: 0.90 }, // 10% discount
+            gold_18k:      { type: 'gold',      purity: 0.750, margin: 0.90 }, // 10% discount
+            gold_14k:      { type: 'gold',      purity: 0.583, margin: 0.90 }, // 10% discount
+            gold_9k:       { type: 'gold',      purity: 0.375, margin: 0.90 }, // 10% discount
+            silver_999:    { type: 'silver',    purity: 0.999, margin: 0.60 }, // 40% discount
+            silver_925:    { type: 'silver',    purity: 0.925, margin: 0.60 }, // 40% discount
+            platinum_pure: { type: 'platinum',  purity: 0.999, margin: 0.85 }, // 15% discount
+            palladium_pure:{ type: 'palladium', purity: 0.999, margin: 0.85 }  // 15% discount
+        };
+
+        const TROY_OUNCE_CONVERSION_DIVISOR = 31.1034768;
+
+        /**
+         * Pulls currency datasets and converts values to dynamic spot references
+         */
+        async function fetchMarketSpotRates() {
+            try {
+                const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/nzd.json');
+
+                if (!response.ok) {
+                    throw new Error('Public currency endpoints are temporarily offline.');
+                }
+
+                const data = await response.json();
+
+                // Capture live global conversion parameter for display rendering
+                if (data.nzd && data.nzd.usd) {
+                    marketState.nzdUsdRate = parseFloat(data.nzd.usd);
+                }
+
+                const extractedGold = 1 / parseFloat(data.nzd.xau);
+                const extractedSilver = 1 / parseFloat(data.nzd.xag);
+                const extractedPlatinum = 1 / parseFloat(data.nzd.xpt || 0.00035);
+                const extractedPalladium = 1 / parseFloat(data.nzd.xpd || 0.00041);
+
+                if (!isNaN(extractedGold) && isFinite(extractedGold)) marketState.goldSpotPrice = extractedGold;
+                if (!isNaN(extractedSilver) && isFinite(extractedSilver)) marketState.silverSpotPrice = extractedSilver;
+                if (!isNaN(extractedPlatinum) && isFinite(extractedPlatinum)) marketState.platinumSpotPrice = extractedPlatinum;
+                if (!isNaN(extractedPalladium) && isFinite(extractedPalladium)) marketState.palladiumSpotPrice = extractedPalladium;
+
+                marketState.lastUpdated = new Date();
+
+            } catch (error) {
+                console.warn('Market Spot Ticker Exception. Deploying fallbacks:', error.message);
+                marketState.lastUpdated = new Date();
+            } finally {
+                renderDOMInterface();
+            }
+        }
+
+        /**
+         * Renders loaded values directly onto layout selectors
+         */
+        function renderDOMInterface() {
+            document.getElementById('gold-price-display').textContent = marketState.goldSpotPrice.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
+            document.getElementById('silver-price-display').textContent = marketState.silverSpotPrice.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
+            document.getElementById('platinum-price-display').textContent = marketState.platinumSpotPrice.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
+            document.getElementById('palladium-price-display').textContent = marketState.palladiumSpotPrice.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
+            
+            // Format exchange value string to show dynamic status
+            document.getElementById('nzd-usd-rate').textContent = marketState.nzdUsdRate.toFixed(4);
+
+            if (marketState.lastUpdated) {
+                document.getElementById('last-updated-time').textContent = marketState.lastUpdated.toLocaleTimeString('en-NZ', { hour12: false });
+            }
+            
+            calculatePayoutValuation();
+        }
+
+        /**
+         * Mathematical Calculation Engine applying tailored asset discounts
+         */
+        function calculatePayoutValuation() {
+            const inputWeightElement = document.getElementById('asset-weight');
+            const dropdownPurityElement = document.getElementById('asset-purity');
+            const unitTypeElement = document.getElementById('weight-unit');
+            const outputDisplayElement = document.getElementById('payout-output');
+
+            const parsedWeight = parseFloat(inputWeightElement.value);
+            const chosenConfiguration = assetConfig[dropdownPurityElement.value];
+            const chosenUnit = unitTypeElement.value;
+
+            if (isNaN(parsedWeight) || parsedWeight <= 0 || !chosenConfiguration) {
+                outputDisplayElement.textContent = '$0.00';
+                return;
+            }
+
+            let baseSpotPrice = marketState.goldSpotPrice;
+            if (chosenConfiguration.type === 'silver') baseSpotPrice = marketState.silverSpotPrice;
+            if (chosenConfiguration.type === 'platinum') baseSpotPrice = marketState.platinumSpotPrice;
+            if (chosenConfiguration.type === 'palladium') baseSpotPrice = marketState.palladiumSpotPrice;
+            
+            const troyOuncesCalculated = (chosenUnit === 'grams') ? (parsedWeight / TROY_OUNCE_CONVERSION_DIVISOR) : parsedWeight;
+            
+            // Apply customized configuration margins natively to value models
+            const baseGrossValue = troyOuncesCalculated * baseSpotPrice * chosenConfiguration.purity;
+            const finalNetPayout = baseGrossValue * chosenConfiguration.margin;
+
+            outputDisplayElement.textContent = finalNetPayout.toLocaleString('en-NZ', {
+                style: 'currency',
+                currency: 'NZD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function initializeCoreSystem() {
+            const inputWeightElement = document.getElementById('asset-weight');
+            const dropdownPurityElement = document.getElementById('asset-purity');
+            const unitTypeElement = document.getElementById('weight-unit');
+
+            inputWeightElement.addEventListener('input', calculatePayoutValuation);
+            dropdownPurityElement.addEventListener('change', calculatePayoutValuation);
+            unitTypeElement.addEventListener('change', calculatePayoutValuation);
+
+            fetchMarketSpotRates();
+            setInterval(fetchMarketSpotRates, 300000);
+        }
+
+        window.addEventListener('DOMContentLoaded', initializeCoreSystem);
+    </script>
+</body>
+</html>
