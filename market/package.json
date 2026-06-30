@@ -1,0 +1,17 @@
+{
+  "name": "hourly-market-cache-proxy",
+  "version": "1.0.0",
+  "description": "Secure API proxy for currency and metals updates",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+
