@@ -4,9 +4,18 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Enable CORS for your GitHub Pages deployment production origin paths
+const allowedOrigins = ['https://yopdude.github.io', 'http://127.0.0.1:5500', 'http://localhost:5500'];
+
 app.use(cors({
-    origin: 'https://yopdude.github.io/metals/' // Set to '*' or adjust to your frontend domain name variant securely
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    }
 }));
 
 let cachedData = null;
