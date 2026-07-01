@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pella Metals | Precious Metals Refining & Bullion Buyers NZ</title>
+    <meta name="description" content="Pella Metals is a boutique New Zealand precious metals refinery and buyer, offering competitive rates for gold, silver, platinum and palladium scrap and bullion.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Pella Metals | Precious Metals Refining & Bullion Buyers NZ">
+    <meta property="og:description" content="Boutique NZ precious metals refinery and buyer offering competitive rates for gold, silver, platinum and palladium scrap and bullion.">
+    <meta property="og:image" content="images/Pella_Metals_Logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Pella Metals | Precious Metals Refining & Bullion Buyers NZ">
+    <meta name="twitter:description" content="Boutique NZ precious metals refinery and buyer offering competitive rates for gold, silver, platinum and palladium scrap and bullion.">
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
@@ -76,8 +84,8 @@
                         </span>
                     </p>
                 </div>
-                <div class="inline-flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-md">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <div id="sync-status" class="inline-flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-md">
+                    <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>Last Updated: <span id="last-updated-time">Syncing...</span></span>
                 </div>
             </div>
@@ -346,7 +354,8 @@
             platinumSpotPriceNZD: 0,
             palladiumSpotPriceNZD: 0,
             nzdUsdExchangeRate: 0,
-            lastServerSync: null
+            lastServerSync: null,
+            isStale: false
         };
 
         const assetConfig = {
@@ -369,7 +378,7 @@
                 
                 const data = await response.json();
 
-                // CurrencyFreaks provides data as (1 USD = X NZD).
+                // Open Exchange Rates provides the base rate as (1 USD = X NZD).
                 const usdToNzdRate = parseFloat(data.nzd_usd);
                 marketState.nzdUsdExchangeRate = usdToNzdRate;
 
@@ -380,6 +389,9 @@
                 marketState.palladiumSpotPriceNZD = parseFloat(data.palladium) * usdToNzdRate;
                 
                 marketState.lastServerSync = data.serverUpdatedAt ? new Date(data.serverUpdatedAt) : new Date();
+                // Backend flags a "warning" field when it's serving its own stale cache
+                // because the upstream provider call failed - treat that as stale too.
+                marketState.isStale = Boolean(data.warning);
 
             } catch (error) {
                 console.error('Front-end proxy connection pipeline failed. Retrying in fallback cycle...', error);
@@ -391,6 +403,7 @@
                 marketState.platinumSpotPriceNZD  = 980.00 * emergencyUsdToNzdFallback;
                 marketState.palladiumSpotPriceNZD = 920.00 * emergencyUsdToNzdFallback;
                 marketState.lastServerSync = new Date();
+                marketState.isStale = true;
             } finally {
                 renderDOMInterface();
             }
@@ -405,8 +418,20 @@
             document.getElementById('nzd-usd-rate').textContent = marketState.nzdUsdExchangeRate.toFixed(4);
 
             if (marketState.lastServerSync) {
-                document.getElementById('last-updated-time').textContent = marketState.lastServerSync.toLocaleTimeString('en-NZ', { hour12: false }) + ' UTC';
+                document.getElementById('last-updated-time').textContent = marketState.lastServerSync.toLocaleTimeString('en-NZ', { hour12: false }) + ' UTC'
+                    + (marketState.isStale ? ' (delayed)' : '');
             }
+
+            // Subtle visual cue only - dot goes amber and stops pulsing when data isn't fresh
+            const statusDot = document.getElementById('sync-status-dot');
+            if (marketState.isStale) {
+                statusDot.classList.remove('bg-emerald-500', 'animate-pulse');
+                statusDot.classList.add('bg-amber-500');
+            } else {
+                statusDot.classList.remove('bg-amber-500');
+                statusDot.classList.add('bg-emerald-500', 'animate-pulse');
+            }
+
             calculatePayoutValuation();
         }
 
