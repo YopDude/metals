@@ -4,19 +4,9 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigins = ['https://yopdude.github.io', 'http://127.0.0.1:5500', 'http://localhost:5500'];
-
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps, uptime monitors, or curl requests)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    }
-}));
+// Enabled open CORS handling to safely allow GitHub Pages frontends, 
+// local environments, and external cron utilities to fetch read-only data.
+app.use(cors());
 
 let cachedData = null;
 let lastFetchTime = 0;
