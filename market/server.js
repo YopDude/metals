@@ -4,7 +4,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Enabled open CORS handling to safely allow GitHub Pages frontends, 
+// Enabled open CORS handling to safely allow your GitHub Pages frontends, 
 // local environments, and external cron utilities to fetch read-only data.
 app.use(cors());
 
@@ -23,9 +23,10 @@ app.get('/api/prices', async (req, res) => {
     // Determine if cache is either missing or older than 1 hour
     if (!cachedData || (now - lastFetchTime > ONE_HOUR)) {
         try {
-            console.log("Cache expired or empty. Querying CurrencyFreaks API...");
+            console.log("Cache expired or empty. Querying Open Exchange Rates API...");
             
-            const response = await fetch(`https://api.currencyfreaks.com/v2.0/rates/latest?apikey=${apiKey}`);
+            // Hit Open Exchange Rates endpoint
+            const response = await fetch(`https://openexchangerates.org/api/latest.json?app_id=${apiKey}`);
             
             if (!response.ok) {
                 throw new Error(`Provider HTTP Error: ${response.status}`);
@@ -34,8 +35,9 @@ app.get('/api/prices', async (req, res) => {
             const rawJson = await response.json();
             const rates = rawJson.rates;
 
+            // Confirm all necessary symbols exist in the incoming response payload
             if (!rates || !rates.XAU || !rates.XAG || !rates.NZD) {
-                throw new Error("Malformed payload structure received from upstream API provider.");
+                throw new Error("Malformed payload structure received from Open Exchange Rates.");
             }
 
             // Mathematical Conversion: API provides items relative to 1 USD base value parameters
@@ -50,7 +52,7 @@ app.get('/api/prices', async (req, res) => {
             };
 
             lastFetchTime = now;
-            console.log("Successfully cached new hourly data payload.");
+            console.log("Successfully cached new hourly data payload from Open Exchange Rates.");
 
         } catch (error) {
             console.error("Backend fetch routine failed:", error.message);
