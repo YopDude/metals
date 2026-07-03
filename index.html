@@ -87,6 +87,11 @@
                 <div id="sync-status" class="inline-flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-md">
                     <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>Last Updated: <span id="last-updated-time">Syncing...</span></span>
+                    <span id="retry-separator" class="hidden text-slate-300">|</span>
+                    <button id="retry-button" type="button" onclick="manualRetry()"
+                            class="hidden text-red-700 underline decoration-dotted hover:text-red-900 font-semibold disabled:no-underline disabled:text-slate-400 disabled:cursor-not-allowed">
+                        Retry now
+                    </button>
                 </div>
             </div>
 
@@ -245,7 +250,7 @@
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
                         <span class="text-xs font-bold uppercase tracking-widest text-slate-500 block mb-2">Estimated Price in NZD</span>
                         <div id="payout-output" class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight font-mono mb-2">
-                            $0.00
+                            $--.--
                         </div>
                     </div>
                 </div>
@@ -350,8 +355,53 @@
             palladiumSpotPriceNZD: 0,
             nzdUsdExchangeRate: 0,
             lastServerSync: null,
-            isStale: false
+            isStale: false,
+            pricesLoaded: false,
+            isFromLocalCache: false
         };
+
+        const LOCAL_PRICE_CACHE_KEY = 'pellaMetalsLastKnownPrices';
+
+        // Persist the latest good values to the visitor's own browser (not a cookie -
+        // nothing is sent to a server, it's purely local functional storage).
+        function saveLastKnownPricesLocally() {
+            try {
+                localStorage.setItem(LOCAL_PRICE_CACHE_KEY, JSON.stringify({
+                    gold: marketState.goldSpotPriceNZD,
+                    silver: marketState.silverSpotPriceNZD,
+                    platinum: marketState.platinumSpotPriceNZD,
+                    palladium: marketState.palladiumSpotPriceNZD,
+                    nzdUsd: marketState.nzdUsdExchangeRate,
+                    syncedAt: marketState.lastServerSync.toISOString()
+                }));
+            } catch (error) {
+                console.warn('Could not save local price cache.', error);
+            }
+        }
+
+        // Used only when this session has never had a successful fetch. Returns true
+        // if a usable cached value from a previous visit was found and loaded.
+        function loadLastKnownPricesLocally() {
+            try {
+                const cached = localStorage.getItem(LOCAL_PRICE_CACHE_KEY);
+                if (!cached) return false;
+
+                const parsed = JSON.parse(cached);
+                marketState.goldSpotPriceNZD      = parsed.gold;
+                marketState.silverSpotPriceNZD    = parsed.silver;
+                marketState.platinumSpotPriceNZD  = parsed.platinum;
+                marketState.palladiumSpotPriceNZD = parsed.palladium;
+                marketState.nzdUsdExchangeRate     = parsed.nzdUsd;
+                marketState.lastServerSync         = new Date(parsed.syncedAt);
+                marketState.pricesLoaded  = true;
+                marketState.isStale       = true;
+                marketState.isFromLocalCache = true;
+                return true;
+            } catch (error) {
+                console.warn('Could not read local price cache.', error);
+                return false;
+            }
+        }
 
         const assetConfig = {
             gold_24k:      { type: 'gold',      purity: 0.999, margin: 0.94 }, //06% Discount
@@ -365,6 +415,26 @@
         };
 
         const TROY_OUNCE_CONVERSION_DIVISOR = 31.1034768;
+
+        const RETRY_COOLDOWN_MS = 15000;
+        let retryCooldownActive = false;
+
+        function manualRetry() {
+            if (retryCooldownActive) return;
+
+            const retryBtn = document.getElementById('retry-button');
+            retryCooldownActive = true;
+            retryBtn.disabled = true;
+            retryBtn.textContent = 'Retrying...';
+
+            fetchProxyMarketRates().finally(() => {
+                setTimeout(() => {
+                    retryCooldownActive = false;
+                    retryBtn.disabled = false;
+                    retryBtn.textContent = 'Retry now';
+                }, RETRY_COOLDOWN_MS);
+            });
+        }
 
         async function fetchProxyMarketRates() {
             try {
@@ -387,24 +457,51 @@
                 // Backend flags a "warning" field when it's serving its own stale cache
                 // because the upstream provider call failed - treat that as stale too.
                 marketState.isStale = Boolean(data.warning);
+                marketState.pricesLoaded = true;
+                marketState.isFromLocalCache = false;
+                saveLastKnownPricesLocally();
 
             } catch (error) {
-                console.error('Front-end proxy connection pipeline failed. Retrying in fallback cycle...', error);
-                // Hard coded emergency failover variables if backend server fails to wake up
-                const emergencyUsdToNzdFallback = 1.687; 
-                marketState.nzdUsdExchangeRate = emergencyUsdToNzdFallback;
-                marketState.goldSpotPriceNZD      = 2350.00 * emergencyUsdToNzdFallback;
-                marketState.silverSpotPriceNZD    = 29.50 * emergencyUsdToNzdFallback;
-                marketState.platinumSpotPriceNZD  = 980.00 * emergencyUsdToNzdFallback;
-                marketState.palladiumSpotPriceNZD = 920.00 * emergencyUsdToNzdFallback;
-                marketState.lastServerSync = new Date();
+                console.error('Front-end proxy connection pipeline failed.', error);
+                // Don't fabricate numbers. If we already have real data from a previous
+                // successful fetch this session, leave it in place and just flag it as
+                // delayed below. If we've never had real data this session, fall back to
+                // whatever was last saved to this browser - and only show a true "No Data"
+                // state if there's nothing usable there either.
                 marketState.isStale = true;
+                if (!marketState.pricesLoaded) {
+                    loadLastKnownPricesLocally();
+                }
             } finally {
                 renderDOMInterface();
             }
         }
 
         function renderDOMInterface() {
+            const statusDot = document.getElementById('sync-status-dot');
+            const lastUpdatedEl = document.getElementById('last-updated-time');
+
+            if (!marketState.pricesLoaded) {
+                // Never had a successful fetch this session - be upfront rather than guessing
+                document.getElementById('gold-price-display').textContent = 'No Data';
+                document.getElementById('silver-price-display').textContent = 'No Data';
+                document.getElementById('platinum-price-display').textContent = 'No Data';
+                document.getElementById('palladium-price-display').textContent = 'No Data';
+                document.getElementById('nzd-usd-rate').textContent = '—';
+                lastUpdatedEl.textContent = 'Unable to reach price feed';
+
+                statusDot.classList.remove('bg-emerald-500', 'animate-pulse', 'bg-amber-500');
+                statusDot.classList.add('bg-red-500');
+                document.getElementById('retry-separator').classList.remove('hidden');
+                document.getElementById('retry-button').classList.remove('hidden');
+
+                calculatePayoutValuation();
+                return;
+            }
+
+            document.getElementById('retry-separator').classList.toggle('hidden', !marketState.isFromLocalCache);
+            document.getElementById('retry-button').classList.toggle('hidden', !marketState.isFromLocalCache);
+
             document.getElementById('gold-price-display').textContent = marketState.goldSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
             document.getElementById('silver-price-display').textContent = marketState.silverSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
             document.getElementById('platinum-price-display').textContent = marketState.platinumSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
@@ -413,17 +510,22 @@
             document.getElementById('nzd-usd-rate').textContent = marketState.nzdUsdExchangeRate.toFixed(4);
 
             if (marketState.lastServerSync) {
-                document.getElementById('last-updated-time').textContent = marketState.lastServerSync.toLocaleTimeString('en-NZ', { hour12: false }) + ' UTC'
-                    + (marketState.isStale ? ' (delayed)' : '');
+                if (marketState.isFromLocalCache) {
+                    const cachedDateLabel = marketState.lastServerSync.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    const cachedTimeLabel = marketState.lastServerSync.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
+                    lastUpdatedEl.textContent = `${cachedDateLabel}, ${cachedTimeLabel} (offline - cached)`;
+                } else {
+                    lastUpdatedEl.textContent = marketState.lastServerSync.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true })
+                        + (marketState.isStale ? ' (delayed)' : '');
+                }
             }
 
             // Subtle visual cue only - dot goes amber and stops pulsing when data isn't fresh
-            const statusDot = document.getElementById('sync-status-dot');
             if (marketState.isStale) {
-                statusDot.classList.remove('bg-emerald-500', 'animate-pulse');
+                statusDot.classList.remove('bg-emerald-500', 'bg-red-500', 'animate-pulse');
                 statusDot.classList.add('bg-amber-500');
             } else {
-                statusDot.classList.remove('bg-amber-500');
+                statusDot.classList.remove('bg-amber-500', 'bg-red-500');
                 statusDot.classList.add('bg-emerald-500', 'animate-pulse');
             }
 
@@ -435,6 +537,11 @@
             const chosenConfiguration = assetConfig[document.getElementById('asset-purity').value];
             const chosenUnit = document.getElementById('weight-unit').value;
             const outputDisplayElement = document.getElementById('payout-output');
+
+            if (!marketState.pricesLoaded) {
+                outputDisplayElement.textContent = '$--.--';
+                return;
+            }
 
             if (isNaN(parsedWeight) || parsedWeight <= 0 || !chosenConfiguration) {
                 outputDisplayElement.textContent = '$0.00';
