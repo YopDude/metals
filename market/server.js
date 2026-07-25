@@ -12,68 +12,75 @@ let cachedData = null;
 let lastFetchTime = 0;
 const ONE_HOUR = 60 * 60 * 1000; 
 
-app.get('/api/prices', async (req, res) => {
+// Helper function to handle fetching and caching data
+async function updateCacheIfNeeded() {
     const now = Date.now();
     const apiKey = process.env.MARKET_API_KEY;
 
     if (!apiKey) {
-        return res.status(500).json({ error: "Server configuration missing: MARKET_API_KEY env variable is required." });
+        throw new Error("Server configuration missing: MARKET_API_KEY env variable is required.");
     }
 
-    // Determine if cache is either missing or older than 1 hour
     if (!cachedData || (now - lastFetchTime > ONE_HOUR)) {
-        try {
-            console.log("Cache expired or empty. Querying Open Exchange Rates API...");
-            
-            // Hit Open Exchange Rates endpoint
-            const response = await fetch(`https://openexchangerates.org/api/latest.json?app_id=${apiKey}`);
-            
-            if (!response.ok) {
-                throw new Error(`Provider HTTP Error: ${response.status}`);
-            }
-            
-            const rawJson = await response.json();
-            const rates = rawJson.rates;
-
-            // Confirm all necessary symbols exist in the incoming response payload
-            if (!rates || !rates.XAU || !rates.XAG || !rates.NZD) {
-                throw new Error("Malformed payload structure received from Open Exchange Rates.");
-            }
-
-            // Mathematical Conversion: API provides items relative to 1 USD base value parameters
-            // Yield calculations to give price inside structural USD per Troy ounce configurations
-            cachedData = {
-                gold: (1 / parseFloat(rates.XAU)).toFixed(2),       
-                silver: (1 / parseFloat(rates.XAG)).toFixed(2),     
-                platinum: (1 / parseFloat(rates.XPT || 0.0010)).toFixed(2),   
-                palladium: (1 / parseFloat(rates.XPD || 0.0011)).toFixed(2),  
-                nzd_usd: (parseFloat(rates.NZD)).toFixed(4), // 1 USD = X NZD
-                serverUpdatedAt: new Date(now).toUTCString()
-            };
-
-            lastFetchTime = now;
-            console.log("Successfully cached new hourly data payload from Open Exchange Rates.");
-
-        } catch (error) {
-            console.error("Backend fetch routine failed:", error.message);
-            
-            // If the upstream API fails but we have an old cache available, fallback to it
-            if (cachedData) {
-                console.log("Serving stale cache data due to provider error.");
-                return res.json({
-                    ...cachedData,
-                    warning: "Serving stale cache due to provider error",
-                    errorMessage: error.message
-                });
-            }
-            
-            // Fatal backup response if upstream fails and server has completely blank variables
-            return res.status(502).json({ error: "Upstream market data unavailable and cache empty." });
+        console.log("Cache expired or empty. Querying Open Exchange Rates API...");
+        
+        const response = await fetch(`https://openexchangerates.org/api/latest.json?app_id=${apiKey}`);
+        
+        if (!response.ok) {
+            throw new Error(`Provider HTTP Error: ${response.status}`);
         }
-    }
+        
+        const rawJson = await response.json();
+        const rates = rawJson.rates;
 
-    // Serve fresh or valid cached data cleanly
-    res.json(cachedData);
+        if (!rates || !rates.XAU || !rates.XAG || !rates.NZD) {
+            throw new Error("Malformed payload structure received from Open Exchange Rates.");
+        }
+
+        cachedData = {
+            gold: (1 / parseFloat(rates.XAU)).toFixed(2),       
+            silver: (1 / parseFloat(rates.XAG)).toFixed(2),     
+            platinum: (1 / parseFloat(rates.XPT || 0.0010)).toFixed(2),   
+            palladium: (1 / parseFloat(rates.XPD || 0.0011)).toFixed(2),  
+            nzd_usd: (parseFloat(rates.NZD)).toFixed(4),
+            serverUpdatedAt: new Date(now).toUTCString()
+        };
+
+        lastFetchTime = now;
+        console.log("Successfully cached new hourly data payload from Open Exchange Rates.");
+    }
+}
+
+app.get('/api/prices', async (req, res) => {
+    try {
+        await updateCacheIfNeeded();
+        res.json(cachedData);
+    } catch (error) {
+        console.error("Backend fetch routine failed:", error.message);
+        
+        if (cachedData) {
+            console.log("Serving stale cache data due to provider error.");
+            return res.json({
+                ...cachedData,
+                warning: "Serving stale cache due to provider error",
+                errorMessage: error.message
+            });
+        }
+        
+        res.status(502).json({ error: "Upstream market data unavailable and cache empty." });
+    }
+});
+
+// Lightweight cron endpoint to wake up Render and update cache without large payloads
+app.get('/api/cron-ping', async (req, res) => {
+    try {
+        await updateCacheIfNeeded();
+        res.status(200).send("OK");
+    } catch (error) {
+        console.error("Cron ping background fetch failed:", error.message);
+        // Still return 200 or a lightweight error so the cron tool doesn't fail/disable itself
+        res.status(200).send("OK (with background warning)");
+    }
 });
 
 app.listen(PORT, () => {
