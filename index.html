@@ -8,6 +8,9 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.pellametals.co.nz/">
 
+    <!-- Content Security Policy (CSP) Header -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://metals-service-pupn.onrender.com https://formspree.io; img-src 'self' data:; font-src 'self';">
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.pellametals.co.nz/">
     <meta property="og:site_name" content="Pella Metals">
@@ -31,8 +34,6 @@
             scroll-behavior: smooth;
         }
         :root {
-            /* Adjust this to change how fast the mobile price ticker scrolls.
-               Higher = slower, lower = faster. Time = seconds per full loop. */
             --ticker-speed: 34s;
         }
         @keyframes ticker-marquee {
@@ -88,7 +89,6 @@
             </a>
 
             <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold tracking-wide text-slate-600">
-                <a href="#live-prices" class="hover:text-amber-600 transition-colors">Live Prices</a>
                 <a href="#services" class="hover:text-amber-600 transition-colors">Services</a>
                 <a href="#calculator" class="hover:text-amber-600 transition-colors">Calculator</a>
                 <a href="#how-to-sell" class="hover:text-amber-600 transition-colors">How to Sell</a>
@@ -142,9 +142,7 @@
                                 </div>
                                 <span class="text-slate-300 shrink-0 mr-5">•</span>
                             </div>
-
-                            <!-- Duplicate set: only shown on mobile, purely so the marquee loop is seamless -->
-                            <div class="flex items-center gap-x-5 shrink-0 sm:hidden" aria-hidden="true">
+                            <div class="flex items-center gap-x-5 shrink-0 hidden sm:hidden" aria-hidden="true">
                                 <div class="flex items-center gap-1.5 shrink-0">
                                     <span class="font-bold text-amber-600 font-mono text-[10px]">XAU</span>
                                     <span class="price-gold font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
@@ -389,10 +387,10 @@
                     <p class="text-slate-400 mt-2">Have a question or request? Drop us a message below and our specialists will connect with you.</p>
                 </div>
 
-                <form action="https://formspree.io/f/xlgyooyq" method="POST" class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-xl space-y-5">
+                <form id="contact-form" action="https://formspree.io/f/xlgyooyq" method="POST" class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-xl space-y-5">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                            <label for="contact-name" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Full Name</label>
+                            <label for="contact-name" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Name</label>
                             <input type="text" id="contact-name" name="name" required placeholder="John Doe"
                                    class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm transition-colors">
                         </div>
@@ -404,22 +402,25 @@
                     </div>
 
                     <div>
-                        <label for="contact-subject" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Subject Requirement</label>
+                        <label for="contact-subject" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Subject</label>
                         <input type="text" id="contact-subject" name="subject" required placeholder="Pella Metals Consultation"
                                class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm transition-colors">
                     </div>
 
                     <div>
-                        <label for="contact-message" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Detailed Message</label>
+                        <label for="contact-message" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Message</label>
                         <textarea id="contact-message" name="message" rows="5" required placeholder="Describe your material, type, or custom project scope details here..."
                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm transition-colors resize-none"></textarea>
                     </div>
 
                     <div class="pt-2">
-                        <button type="submit" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold text-center rounded-lg text-sm transition-all transform hover:-translate-y-0.5 shadow-md">
-                            Send Secure Message
+                        <button type="submit" id="contact-submit-btn" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold text-center rounded-lg text-sm transition-all transform hover:-translate-y-0.5 shadow-md">
+                            Send Message
                         </button>
                     </div>
+
+                    <!-- Dynamic form status notification block -->
+                    <div id="form-status-message" class="hidden p-4 rounded-lg text-sm text-center font-medium"></div>
                 </form>
             </div>
         </section>
@@ -449,8 +450,6 @@
 
         const LOCAL_PRICE_CACHE_KEY = 'pellaMetalsLastKnownPrices';
 
-        // Persist the latest good values to the visitor's own browser (not a cookie -
-        // nothing is sent to a server, it's purely local functional storage).
         function saveLastKnownPricesLocally() {
             try {
                 localStorage.setItem(LOCAL_PRICE_CACHE_KEY, JSON.stringify({
@@ -466,8 +465,6 @@
             }
         }
 
-        // Used only when this session has never had a successful fetch. Returns true
-        // if a usable cached value from a previous visit was found and loaded.
         function loadLastKnownPricesLocally() {
             try {
                 const cached = localStorage.getItem(LOCAL_PRICE_CACHE_KEY);
@@ -491,14 +488,14 @@
         }
 
         const assetConfig = {
-            gold_24k:      { type: 'gold',      purity: 0.999, margin: 0.94 }, //06% Discount
-            gold_18k:      { type: 'gold',      purity: 0.750, margin: 0.94 }, //06% Discount
-            gold_14k:      { type: 'gold',      purity: 0.583, margin: 0.94 }, //06% Discount
-            gold_9k:       { type: 'gold',      purity: 0.375, margin: 0.94 }, //06% Discount
-            silver_999:    { type: 'silver',    purity: 0.999, margin: 0.60 }, //40% Discount
-            silver_925:    { type: 'silver',    purity: 0.925, margin: 0.60 }, //40% Discount
-            platinum_pure: { type: 'platinum',  purity: 0.999, margin: 0.85 }, //15% Discount
-            palladium_pure:{ type: 'palladium', purity: 0.999, margin: 0.85 }  //15% Discount
+            gold_24k:      { type: 'gold',      purity: 0.999, margin: 0.94 }, 
+            gold_18k:      { type: 'gold',      purity: 0.750, margin: 0.94 }, 
+            gold_14k:      { type: 'gold',      purity: 0.583, margin: 0.94 }, 
+            gold_9k:       { type: 'gold',      purity: 0.375, margin: 0.94 }, 
+            silver_999:    { type: 'silver',    purity: 0.999, margin: 0.60 }, 
+            silver_925:    { type: 'silver',    purity: 0.925, margin: 0.60 }, 
+            platinum_pure: { type: 'platinum',  purity: 0.999, margin: 0.85 }, 
+            palladium_pure:{ type: 'palladium', purity: 0.999, margin: 0.85 }  
         };
 
         const TROY_OUNCE_CONVERSION_DIVISOR = 31.1034768;
@@ -526,23 +523,18 @@
         async function fetchProxyMarketRates() {
             try {
                 const response = await fetch(PROXY_BACKEND_URL);
-                if (!response.ok) throw new Error('Proxy server returned an bad status code response.');
+                if (!response.ok) throw new Error('Proxy server returned a bad status code response.');
                 
                 const data = await response.json();
-
-                // Open Exchange Rates provides the base rate as (1 USD = X NZD).
                 const usdToNzdRate = parseFloat(data.nzd_usd);
                 marketState.nzdUsdExchangeRate = usdToNzdRate;
 
-                // Process standard values: (Metal Price in USD) * (1 USD to X NZD Exchange Parameter) = Price in NZD
                 marketState.goldSpotPriceNZD      = parseFloat(data.gold) * usdToNzdRate;
                 marketState.silverSpotPriceNZD    = parseFloat(data.silver) * usdToNzdRate;
                 marketState.platinumSpotPriceNZD  = parseFloat(data.platinum) * usdToNzdRate;
                 marketState.palladiumSpotPriceNZD = parseFloat(data.palladium) * usdToNzdRate;
                 
                 marketState.lastServerSync = data.serverUpdatedAt ? new Date(data.serverUpdatedAt) : new Date();
-                // Backend flags a "warning" field when it's serving its own stale cache
-                // because the upstream provider call failed - treat that as stale too.
                 marketState.isStale = Boolean(data.warning);
                 marketState.pricesLoaded = true;
                 marketState.isFromLocalCache = false;
@@ -550,11 +542,6 @@
 
             } catch (error) {
                 console.error('Front-end proxy connection pipeline failed.', error);
-                // Don't fabricate numbers. If we already have real data from a previous
-                // successful fetch this session, leave it in place and just flag it as
-                // delayed below. If we've never had real data this session, fall back to
-                // whatever was last saved to this browser - and only show a true "No Data"
-                // state if there's nothing usable there either.
                 marketState.isStale = true;
                 if (!marketState.pricesLoaded) {
                     loadLastKnownPricesLocally();
@@ -572,7 +559,6 @@
             };
 
             if (!marketState.pricesLoaded) {
-                // Never had a successful fetch this session - be upfront rather than guessing
                 setAllText('.price-gold', 'No Data');
                 setAllText('.price-silver', 'No Data');
                 setAllText('.price-platinum', 'No Data');
@@ -596,7 +582,6 @@
             setAllText('.price-silver', marketState.silverSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' }));
             setAllText('.price-platinum', marketState.platinumSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' }));
             setAllText('.price-palladium', marketState.palladiumSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' }));
-
             setAllText('.rate-nzd', marketState.nzdUsdExchangeRate.toFixed(4));
 
             if (marketState.lastServerSync) {
@@ -610,7 +595,6 @@
                 }
             }
 
-            // Subtle visual cue only - dot goes amber and stops pulsing when data isn't fresh
             if (marketState.isStale) {
                 statusDot.classList.remove('bg-emerald-500', 'bg-red-500', 'animate-pulse');
                 statusDot.classList.add('bg-amber-500');
@@ -644,7 +628,6 @@
             if (chosenConfiguration.type === 'palladium') baseSpotPriceNZD = marketState.palladiumSpotPriceNZD;
             
             const troyOuncesCalculated = (chosenUnit === 'grams') ? (parsedWeight / TROY_OUNCE_CONVERSION_DIVISOR) : parsedWeight;
-            
             const baseGrossValue = troyOuncesCalculated * baseSpotPriceNZD * chosenConfiguration.purity;
             const finalNetPayout = baseGrossValue * chosenConfiguration.margin;
 
@@ -656,13 +639,59 @@
             });
         }
 
+        // Asynchronous Contact Form Client Validation & Submission Handler
+        function initializeContactForm() {
+            const form = document.getElementById('contact-form');
+            const submitBtn = document.getElementById('contact-submit-btn');
+            const statusMsg = document.getElementById('form-status-message');
+
+            if (!form) return;
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending message...';
+                statusMsg.classList.add('hidden');
+                statusMsg.className = 'hidden p-4 rounded-lg text-sm text-center font-medium';
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        statusMsg.textContent = 'Thank you! Your message has been sent successfully. We will be in touch shortly.';
+                        statusMsg.classList.remove('hidden');
+                        statusMsg.classList.add('bg-emerald-900/50', 'border', 'border-emerald-600', 'text-emerald-200');
+                        form.reset();
+                    } else {
+                        const data = await response.json();
+                        throw new Error(data.error || 'Form submission encountered a server issue.');
+                    }
+                } catch (error) {
+                    statusMsg.textContent = error.message || 'There was a problem submitting your message. Please try again later.';
+                    statusMsg.classList.remove('hidden');
+                    statusMsg.classList.add('bg-red-900/50', 'border', 'border-red-600', 'text-red-200');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Message';
+                }
+            });
+        }
+
         function initializeCoreSystem() {
             document.getElementById('asset-weight').addEventListener('input', calculatePayoutValuation);
             document.getElementById('asset-purity').addEventListener('change', calculatePayoutValuation);
             document.getElementById('weight-unit').addEventListener('change', calculatePayoutValuation);
 
             fetchProxyMarketRates();
-            // Pull tracking updates once every 5 minutes safely
+            initializeContactForm();
             setInterval(fetchProxyMarketRates, 300000);
         }
 
