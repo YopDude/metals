@@ -1,24 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-NZ">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pella Metals | Precious Metals Refining & Bullion Buyers NZ</title>
     <meta name="description" content="Pella Metals is a boutique New Zealand precious metals refinery and buyer, offering competitive rates for gold, silver, platinum and palladium scrap and bullion.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.pellametals.co.nz/">
+
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.pellametals.co.nz/">
+    <meta property="og:site_name" content="Pella Metals">
     <meta property="og:title" content="Pella Metals | Precious Metals Refining & Bullion Buyers NZ">
     <meta property="og:description" content="Boutique NZ precious metals refinery and buyer offering competitive rates for gold, silver, platinum and palladium scrap and bullion.">
-    <meta property="og:image" content="images/Pella_Metals_Logo.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://www.pellametals.co.nz/images/Pella_Metals_Logo.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:locale" content="en_NZ">
+
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Pella Metals | Precious Metals Refining & Bullion Buyers NZ">
     <meta name="twitter:description" content="Boutique NZ precious metals refinery and buyer offering competitive rates for gold, silver, platinum and palladium scrap and bullion.">
+    <meta name="twitter:image" content="https://www.pellametals.co.nz/images/Pella_Metals_Logo.png">
+
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         html {
             scroll-behavior: smooth;
         }
+        :root {
+            /* Adjust this to change how fast the mobile price ticker scrolls.
+               Higher = slower, lower = faster. Time = seconds per full loop. */
+            --ticker-speed: 34s;
+        }
+        @keyframes ticker-marquee {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-track {
+            animation: ticker-marquee var(--ticker-speed) linear infinite;
+        }
+        .ticker-track:hover {
+            animation-play-state: paused;
+        }
+        @media (min-width: 640px) {
+            .ticker-track {
+                animation: none;
+                transform: none;
+            }
+        }
     </style>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FinancialService",
+        "name": "Pella Metals",
+        "alternateName": "Pella Metals NZ Limited",
+        "description": "Boutique New Zealand precious metals refinery and buyer offering competitive rates for gold, silver, platinum and palladium scrap and bullion.",
+        "url": "https://www.pellametals.co.nz/",
+        "logo": "https://www.pellametals.co.nz/images/Pella_Metals_Logo.png",
+        "image": "https://www.pellametals.co.nz/images/Pella_Metals_Logo.png",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Auckland CBD",
+            "postalCode": "1010",
+            "addressCountry": "NZ"
+        },
+        "areaServed": "NZ",
+        "priceRange": "$$"
+    }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-amber-500 selection:text-slate-950">
 
@@ -46,6 +98,96 @@
                 </a>
             </div>
         </div>
+
+        <div id="live-prices" class="border-t border-slate-200 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center gap-3 py-1.5 text-xs">
+
+                    <div class="min-w-0 flex-1 overflow-hidden sm:overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                        <div class="ticker-track flex items-center whitespace-nowrap w-max">
+
+                            <div class="flex items-center gap-x-5 shrink-0 mr-5">
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="font-bold text-amber-600 font-mono text-[10px]">XAU</span>
+                                    <span class="price-gold font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
+                                </div>
+                                <span class="text-slate-300 shrink-0">•</span>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="font-bold text-slate-500 font-mono text-[10px]">XAG</span>
+                                    <span class="price-silver font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
+                                </div>
+                                <span class="text-slate-300 shrink-0">•</span>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="font-bold text-slate-500 font-mono text-[10px]">XPT</span>
+                                    <span class="price-platinum font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
+                                </div>
+                                <span class="text-slate-300 shrink-0">•</span>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="font-bold text-slate-500 font-mono text-[10px]">XPD</span>
+                                    <span class="price-palladium font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
+                                </div>
+                                <span class="text-slate-300 shrink-0">•</span>
+
+                                <div class="flex items-center gap-1.5 shrink-0 text-slate-500">
+                                    <span class="font-mono text-[10px]">1 USD =</span>
+                                    <span class="rate-nzd font-mono font-semibold text-slate-700">Loading...</span>
+                                    <span class="font-mono text-[10px]">NZD</span>
+                                </div>
+                            </div>
+
+                            <!-- Duplicate set: only shown on mobile, purely so the marquee loop is seamless -->
+                            <div class="flex items-center gap-x-5 shrink-0 mr-5 sm:hidden" aria-hidden="true">
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="font-bold text-amber-600 font-mono text-[10px]">XAU</span>
+                                    <span class="price-gold font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
+                                </div>
+                                <span class="text-slate-300 shrink-0">•</span>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="font-bold text-slate-500 font-mono text-[10px]">XAG</span>
+                                    <span class="price-silver font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
+                                </div>
+                                <span class="text-slate-300 shrink-0">•</span>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="font-bold text-slate-500 font-mono text-[10px]">XPT</span>
+                                    <span class="price-platinum font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
+                                </div>
+                                <span class="text-slate-300 shrink-0">•</span>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="font-bold text-slate-500 font-mono text-[10px]">XPD</span>
+                                    <span class="price-palladium font-mono font-semibold text-slate-900">$--.--</span><span class="font-mono text-[9px] text-slate-400">/oz</span>
+                                </div>
+                                <span class="text-slate-300 shrink-0">•</span>
+
+                                <div class="flex items-center gap-1.5 shrink-0 text-slate-500">
+                                    <span class="font-mono text-[10px]">1 USD =</span>
+                                    <span class="rate-nzd font-mono font-semibold text-slate-700">Loading...</span>
+                                    <span class="font-mono text-[10px]">NZD</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0 pl-3 border-l border-slate-200 text-slate-500 font-mono text-[10px]">
+                        <span id="sync-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                        <span id="last-updated-time">Syncing...</span>
+                        <span id="retry-separator" class="hidden text-slate-300">|</span>
+                        <button id="retry-button" type="button" onclick="manualRetry()"
+                                class="hidden text-red-700 underline decoration-dotted hover:text-red-900 font-semibold disabled:no-underline disabled:text-slate-400 disabled:cursor-not-allowed">
+                            Retry now
+                        </button>
+                    </div>
+
+                </div>
+                <p class="text-[9px] sm:text-[10px] text-slate-400 leading-none pb-1 -mt-0.5">Spot prices are updated hourly in New Zealand Dollars</p>
+            </div>
+        </div>
     </header>
 
     <main>
@@ -69,67 +211,6 @@
                     <a href="#services" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-100 transition-all text-center border border-slate-300 shadow-sm">
                         Our Services
                     </a>
-                </div>
-            </div>
-        </section>
-
-        <section id="live-prices" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-slate-200 scroll-mt-24">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
-                <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Spot Prices Index</h2>
-                    <p class="text-sm text-slate-500 mt-1">
-                        Spot prices are updated hourly in New Zealand Dollars converted from global USD markets. 
-                        <span class="block font-medium text-slate-700 mt-1 sm:mt-0">
-                            Current Live Exchange Conversion Rate: 1 USD = <span id="nzd-usd-rate" class="font-mono font-bold text-amber-700">Loading...</span> NZD.
-                        </span>
-                    </p>
-                </div>
-                <div id="sync-status" class="inline-flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-md">
-                    <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Last Updated: <span id="last-updated-time">Syncing...</span></span>
-                    <span id="retry-separator" class="hidden text-slate-300">|</span>
-                    <button id="retry-button" type="button" onclick="manualRetry()"
-                            class="hidden text-red-700 underline decoration-dotted hover:text-red-900 font-semibold disabled:no-underline disabled:text-slate-400 disabled:cursor-not-allowed">
-                        Retry now
-                    </button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-amber-500/50 transition-all">
-                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600 font-mono">XAU / NZD</span>
-                    <h3 class="text-lg font-bold text-slate-900 mt-0.5">Gold</h3>
-                    <div class="flex items-baseline gap-1 mt-3">
-                        <span id="gold-price-display" class="text-2xl font-bold font-mono text-slate-900">$--.--</span>
-                        <span class="text-xs text-slate-500 font-medium">/ oz</span>
-                    </div>
-                </div>
-
-                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-slate-400 transition-all">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">XAG / NZD</span>
-                    <h3 class="text-lg font-bold text-slate-900 mt-0.5">Silver</h3>
-                    <div class="flex items-baseline gap-1 mt-3">
-                        <span id="silver-price-display" class="text-2xl font-bold font-mono text-slate-900">$--.--</span>
-                        <span class="text-xs text-slate-500 font-medium">/ oz</span>
-                    </div>
-                </div>
-
-                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-slate-400 transition-all">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">XPT / NZD</span>
-                    <h3 class="text-lg font-bold text-slate-900 mt-0.5">Platinum</h3>
-                    <div class="flex items-baseline gap-1 mt-3">
-                        <span id="platinum-price-display" class="text-2xl font-bold font-mono text-slate-900">$--.--</span>
-                        <span class="text-xs text-slate-500 font-medium">/ oz</span>
-                    </div>
-                </div>
-
-                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-slate-400 transition-all">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">XPD / NZD</span>
-                    <h3 class="text-lg font-bold text-slate-900 mt-0.5">Palladium</h3>
-                    <div class="flex items-baseline gap-1 mt-3">
-                        <span id="palladium-price-display" class="text-2xl font-bold font-mono text-slate-900">$--.--</span>
-                        <span class="text-xs text-slate-500 font-medium">/ oz</span>
-                    </div>
                 </div>
             </div>
         </section>
@@ -480,14 +561,17 @@
         function renderDOMInterface() {
             const statusDot = document.getElementById('sync-status-dot');
             const lastUpdatedEl = document.getElementById('last-updated-time');
+            const setAllText = (selector, text) => {
+                document.querySelectorAll(selector).forEach(el => { el.textContent = text; });
+            };
 
             if (!marketState.pricesLoaded) {
                 // Never had a successful fetch this session - be upfront rather than guessing
-                document.getElementById('gold-price-display').textContent = 'No Data';
-                document.getElementById('silver-price-display').textContent = 'No Data';
-                document.getElementById('platinum-price-display').textContent = 'No Data';
-                document.getElementById('palladium-price-display').textContent = 'No Data';
-                document.getElementById('nzd-usd-rate').textContent = '—';
+                setAllText('.price-gold', 'No Data');
+                setAllText('.price-silver', 'No Data');
+                setAllText('.price-platinum', 'No Data');
+                setAllText('.price-palladium', 'No Data');
+                setAllText('.rate-nzd', '—');
                 lastUpdatedEl.textContent = 'Unable to reach price feed';
 
                 statusDot.classList.remove('bg-emerald-500', 'animate-pulse', 'bg-amber-500');
@@ -502,12 +586,12 @@
             document.getElementById('retry-separator').classList.toggle('hidden', !marketState.isFromLocalCache);
             document.getElementById('retry-button').classList.toggle('hidden', !marketState.isFromLocalCache);
 
-            document.getElementById('gold-price-display').textContent = marketState.goldSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
-            document.getElementById('silver-price-display').textContent = marketState.silverSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
-            document.getElementById('platinum-price-display').textContent = marketState.platinumSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
-            document.getElementById('palladium-price-display').textContent = marketState.palladiumSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' });
-            
-            document.getElementById('nzd-usd-rate').textContent = marketState.nzdUsdExchangeRate.toFixed(4);
+            setAllText('.price-gold', marketState.goldSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' }));
+            setAllText('.price-silver', marketState.silverSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' }));
+            setAllText('.price-platinum', marketState.platinumSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' }));
+            setAllText('.price-palladium', marketState.palladiumSpotPriceNZD.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' }));
+
+            setAllText('.rate-nzd', marketState.nzdUsdExchangeRate.toFixed(4));
 
             if (marketState.lastServerSync) {
                 if (marketState.isFromLocalCache) {
