@@ -37,12 +37,12 @@ async function updateCacheIfNeeded() {
             throw new Error("Malformed payload structure received from Open Exchange Rates.");
         }
 
-        cachedData = {
+        cachedData = {  
             gold: (1 / parseFloat(rates.XAU)).toFixed(2),       
             silver: (1 / parseFloat(rates.XAG)).toFixed(2),     
             platinum: (1 / parseFloat(rates.XPT || 0.0010)).toFixed(2),   
             palladium: (1 / parseFloat(rates.XPD || 0.0011)).toFixed(2),  
-            nzd_usd: (parseFloat(rates.NZD)).toFixed(4),
+            usd_nzd: (parseFloat(rates.NZD)).toFixed(4),
             serverUpdatedAt: new Date(now).toUTCString()
         };
 
@@ -75,11 +75,12 @@ app.get('/api/prices', async (req, res) => {
 app.get('/api/cron-ping', async (req, res) => {
     try {
         await updateCacheIfNeeded();
-        res.status(200).send("OK");
+        // Return minimal JSON instead of plain text to ensure clear tracking
+        return res.status(200).json({ status: "ok" });
     } catch (error) {
         console.error("Cron ping background fetch failed:", error.message);
-        // Still return 200 or a lightweight error so the cron tool doesn't fail/disable itself
-        res.status(200).send("OK (with background warning)");
+        // Return a small JSON error payload rather than full stack traces or HTML pages
+        return res.status(200).json({ status: "error", message: error.message });
     }
 });
 

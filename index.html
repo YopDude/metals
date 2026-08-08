@@ -457,7 +457,7 @@
                     silver: marketState.silverSpotPriceNZD,
                     platinum: marketState.platinumSpotPriceNZD,
                     palladium: marketState.palladiumSpotPriceNZD,
-                    nzdUsd: marketState.nzdUsdExchangeRate,
+                    usdToNzd: marketState.nzdUsdExchangeRate,
                     syncedAt: marketState.lastServerSync.toISOString()
                 }));
             } catch (error) {
@@ -475,7 +475,7 @@
                 marketState.silverSpotPriceNZD    = parsed.silver;
                 marketState.platinumSpotPriceNZD  = parsed.platinum;
                 marketState.palladiumSpotPriceNZD = parsed.palladium;
-                marketState.nzdUsdExchangeRate     = parsed.nzdUsd;
+                marketState.nzdUsdExchangeRate    = parsed.usdToNzd || parsed.usd_nzd;
                 marketState.lastServerSync         = new Date(parsed.syncedAt);
                 marketState.pricesLoaded  = true;
                 marketState.isStale       = true;
@@ -526,7 +526,7 @@
                 if (!response.ok) throw new Error('Proxy server returned a bad status code response.');
                 
                 const data = await response.json();
-                const usdToNzdRate = parseFloat(data.nzd_usd);
+                const usdToNzdRate = parseFloat(data.usd_nzd);
                 marketState.nzdUsdExchangeRate = usdToNzdRate;
 
                 marketState.goldSpotPriceNZD      = parseFloat(data.gold) * usdToNzdRate;
